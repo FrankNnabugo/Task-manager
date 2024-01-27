@@ -4,7 +4,6 @@ import { TaskRouter } from "./Routes/Task.Route";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
-import bodyParser from "body-parser";
 const app = express();
 
 
@@ -19,10 +18,12 @@ app.use((req:Request, res:Response, next:NextFunction)=>{
     console.log(req.path, req.method);
     next();
 });
-app.use(errorHandler);
 
 
 app.use("/api/task", TaskRouter);
+
+
+app.use(errorHandler);
 
 
 
