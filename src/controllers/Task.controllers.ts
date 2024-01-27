@@ -1,61 +1,59 @@
-import{Task} from "../model/Task.model";
+
 import{Request, Response} from "express";
 import asyncHandler from "express-async-handler";
 import{schemaValidation} from "../Utils/Schema.validation";
+import {taskService} from "../service/task.service";
 
 
+export class TaskController{
 
-
-export const createTask = asyncHandler(async(req:Request, res:Response)=>{
-    const data = {
+    postTask = asyncHandler(async(req:Request, res:Response) =>{
+    const taskData = {
         title: req.body.title,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         assignTo: req.body.assignTo
     }
-    const{error, value} = schemaValidation.validate(data);
+    const{error, value} = schemaValidation.validate(taskData);
     if(error){
         res.status(400).send(error.message)
     }
     else{
-const newTask = await Task.create(data);
+const newTask = await taskService.createTask(value);
     res.status(200).send(newTask);
     }
-});
+    });
+
+
+    findAllTask = asyncHandler(async(req:Request, res:Response)=>{
+        const allTask = await taskService.getAllTask();
+           res.send(allTask)
+    });
 
 
 
-export const getAllTask = asyncHandler(async(req:Request, res:Response)=>{
-    const page:any = req.query.page || 0;
-    const perPage: number = 5;
-    const getAllTask = await Task.find({})
-    .sort({createdAt: -1})
-    .skip(page*perPage)
-    .limit(perPage);
-    res.send(getAllTask);
-});
-
-
-
-export const getATask = asyncHandler(async(req:Request, res:Response)=>{
-    const{id}=req.params;
-    const get = await Task.findOne({_id:id});
+findATask = asyncHandler(async(req:Request, res:Response)=>{
+    const id = req.params.id;
+    const get = await taskService.getATask(id);
     res.send(get);
+});
 
-})
 
-
-export const deleteATask = asyncHandler(async(req:Request, res:Response)=>{
-    const{id} = req.params;
-    const deleteTask = await Task.deleteOne({_id:id});
+removeTask = asyncHandler(async(req:Request, res:Response)=>{
+    const id = req.params.id;
+    const deleteTask = await taskService.deleteTask(id);
     res.send("Task deleted");
 });
 
 
 
-
-export const updateTask = asyncHandler(async(req:Request, res:Response)=>{
-    const{id} = req.params;
-    const update = await Task.updateOne({_id:id}, req.body);
+updateTask = asyncHandler(async(req:Request, res:Response)=>{
+    const id = req.params;
+    const update = await taskService.updateTask(id, req.body);
     res.send(update);   
-});
+})
+
+ }
+
+
+ export const taskController = new TaskController();

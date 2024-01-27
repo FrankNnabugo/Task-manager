@@ -1,11 +1,5 @@
 import{model, Schema}from "mongoose";
-
-interface Itask{
-    title : string 
-    startDate: string
-    endDate: string 
-    assignTo: string
-}
+import { Itask } from "./Task.interface";
 
 const taskSchema = new Schema<Itask>({
 
